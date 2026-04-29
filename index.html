@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand-block">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="brand-logo">
+                <div>
+                    <h1>Expense Tracker</h1>
+                    <p>Track smarter. Spend better.</p>
+                </div>
+            </div>
+
+            <div class="sidebar-card budget-card">
+                <span class="card-label">Monthly Budget</span>
+                <div class="budget-row">
+                    <input type="number" id="budgetInput" placeholder="Enter budget">
+                    <button id="saveBudgetBtn">Save</button>
+                </div>
+                <p class="mini-note">This is stored only in your browser.</p>
+            </div>
+
+            <div class="sidebar-card filter-card">
+                <span class="card-label">Filters</span>
+
+                <label for="monthFilter">Month</label>
+                <input type="month" id="monthFilter">
+
+                <label for="categoryFilter">Category</label>
+                <select id="categoryFilter">
+                    <option value="All">All Categories</option>
+                        <option value="Food">Food</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="Bills">Bills</option>
+                        <option value="Health">Health</option>
+                        <option value="Education">Education</option>
+                        <option value="Savings">Savings</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Stock">Stock</option>
+                        <option value="EMI">EMI</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Insurance">Insurance</option>
+                        <option value="Entertainment">Entertainment</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <label for="searchInput">Search</label>
+                <input type="text" id="searchInput" placeholder="Search by title or notes">
+
+                <button id="clearFiltersBtn" class="secondary-btn">Clear Filters</button>
+            </div>
+
+            <div class="sidebar-card">
+                <span class="card-label">Actions</span>
+                <div class="action-row">
+                    <button id="pieBtn">Pie</button>
+                    <button id="barBtn">Bar</button>
+                    <button id="exportBtn">CSV</button>
+                </div>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <h2>Dashboard</h2>
+                    <p class="topbar-sub">Your personal finance overview</p>
+                </div>
+                <button class="primary-btn" id="openModalBtn">+ Add Expense</button>
+            </header>
+
+            <section class="summary-grid">
+                <div class="summary-card">
+                    <span class="summary-title">Total Expense</span>
+                    <h3 id="totalExpense">₹0</h3>
+                </div>
+
+                <div class="summary-card">
+                    <span class="summary-title">This Month</span>
+                    <h3 id="monthExpense">₹0</h3>
+                </div>
+
+                <div class="summary-card">
+                    <span class="summary-title">Top Category</span>
+                    <h3 id="topCategory">-</h3>
+                </div>
+
+                <div class="summary-card">
+                    <span class="summary-title">Budget Left</span>
+                    <h3 id="budgetLeft">₹0</h3>
+                </div>
+            </section>
+
+            <section class="content-grid">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Recent Expenses</h3>
+                        <span id="expenseCount" class="chip">0 items</span>
+                    </div>
+                    <div id="expenseList" class="expense-list"></div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3>Category Breakdown</h3>
+                    </div>
+                    <div id="categoryBreakdown" class="breakdown-list"></div>
+                </div>
+            </section>
+
+            <section class="panel hidden" id="chartPanel">
+                <div class="chart-box">
+                    <canvas id="categoryPieChart"></canvas>
+                </div>
+                <div>
+                    <canvas id="monthlyBarChart"></canvas>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay hidden" id="expenseModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add Expense</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+
+            <form id="expenseForm">
+                <input type="hidden" id="expenseId">
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" id="title" placeholder="Enter expense title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" placeholder="Enter amount" min="1" step="0.01" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="">Select category</option>
+                            <option value="Food">Food</option>
+                            <option value="Travel">Travel</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Bills">Bills</option>
+                            <option value="Health">Health</option>
+                            <option value="Education">Education</option>
+                            <option value="Savings">Savings</option>
+                            <option value="Investment">Investment</option>
+                            <option value="Stock">Stock</option>
+                            <option value="EMI">EMI</option>
+                            <option value="Rent">Rent</option>
+                            <option value="Insurance">Insurance</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="expenseDate">Date</label>
+                        <input type="date" id="expenseDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="paymentMode">Payment Mode</label>
+                        <select id="paymentMode" required>
+                            <option value="">Select payment mode</option>
+                            <option value="Cash">Cash</option>
+                            <option value="UPI">UPI</option>
+                            <option value="Card">Card</option>
+                            <option value="Net Banking">Net Banking</option>
+                            <option value="Wallet">Wallet</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" rows="4" placeholder="Optional notes"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="secondary-btn" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="primary-btn" id="saveExpenseBtn">Save Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const initialExpenses = {{ expenses | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
