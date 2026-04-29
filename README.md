@@ -45,12 +45,12 @@ http://127.0.0.1:5000
 ```
 
 ## Screenshots
-![Dashboard](screenshots/dashboard.png)
-![Add Expense](screenshots/add-expense.png)
-![Categories](screenshots/categories.png)
-![Payment Mode](screenshots/payment.png)
-![Pie Chart](screenshots/pie-chart.png)
-![Bar Graph](screenshots/bar-chart.png)
+![Categories of Expenses](screenshots/categorys-of-expenses.png)
+![Add Expense Card](screenshots/expense-adding-card.png)
+![Expense Tracker Dashboard](screenshots/expense-tracker.png)
+![Mode of Payment](screenshots/mode-of-payment.png)
+![Monthly Expense Bar Graph](screenshots/monthly-expense-bargraph.png)
+![Monthly Pie Chart of Expenses](screenshots/monthly-piechart-of-expenses.png)
 
 ---
 
